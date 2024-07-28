@@ -1,63 +1,51 @@
-// when the dom gets loaded
-document.addEventListener("DOMContentLoaded", function () {
-  // get the container
-  const fetchContainer = document.querySelector(".fetch__container");
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.getElementById("container");
   const loading = document.getElementById("loading");
-  const loadingData = false;
-  let page = 1;
+  let page = 0;
+  let loadingData = false;
   let hasMore = true;
 
-  //   fetch items
-  const fetchData = async (pageIndex) => {
-    // set loading data to true
+  const fetchItems = async (pageNumber) => {
     loadingData = true;
-    // show loading spinner
     loading.style.display = "block";
 
     try {
-      const res = await fetch(
-        `https://api.example.com/items?page=${pageIndex}`
+      const limit = 5;
+      const skip = pageNumber * limit;
+      const response = await fetch(
+        `https://dummyjson.com/products?limit=${limit}&skip=${skip}`
       );
-      const newItems = await res.json();
+      const newItems = await response.json();
 
-      // check if there are more items
-      hasMore = newItems.length > 0 ? true : false;
-      // add new items to the container
-      newItems.forEach((item) => {
-        const itemDiv = document.createElement("div");
-        itemDiv.classList.add("fetch__item");
-        itemDiv.innerHTML = `
-        <h3>${item.title}</h3>
-        <p>${item.description}</p>
-        `;
-        fetchContainer.appendChild(itemDiv);
-      });
+      if (newItems.products.length === 0) {
+        hasMore = false;
+      } else {
+        newItems.products.forEach((item) => {
+          const div = document.createElement("div");
+          div.className = "item";
+          div.textContent = item.title;
+          container.appendChild(div);
+        });
+      }
     } catch (error) {
-      console.error("Error fetching data:", error);
-      // set loading data to false and loading to none
-      loadingData = false;
-      loading.style.display = "none";
-    } finally {
-      // hide loading spinner
-      loading.style.display = "none";
-      // set loading data to false
-      loadingData = false;
+      console.error("Failed to fetch items:", error);
     }
+
+    loading.style.display = "none";
+    loadingData = false;
   };
 
-  //   the observer
   const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-      // if the user has scrolled to the bottom and there are more items to fetch
-      if (hasMore && !loadingData) {
-        page++;
-        fetchData(page);
-      }
+    console.log(entries);
+    if (entries[0].isIntersecting && !loadingData && hasMore) {
+      page += 1;
+      fetchItems(page);
     }
+    console.log("Nothing is intersecting");
   });
-  // observe the loading
+
   observer.observe(loading);
 
-  // call the fetch
-  fetchData(page);
+  // Initial fetch
+  fetchItems(page);
 });

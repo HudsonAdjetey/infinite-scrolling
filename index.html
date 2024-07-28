@@ -3,13 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Infinite Scroll</title>
+    <style>
+      .item {
+        margin: 20px;
+        padding: 20px;
+        border: 1px solid #ccc;
+      }
+    </style>
   </head>
   <body>
-    <div class="fetch__container"></div>
-    <div id="loading"></div>
-
-    <!-- script file -->
+    <div id="container"></div>
+    <div id="loading">Loading...</div>
     <script src="script.js"></script>
   </body>
 </html>
