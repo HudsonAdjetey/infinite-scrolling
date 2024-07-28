@@ -44,4 +44,20 @@ document.addEventListener("DOMContentLoaded", function () {
       loadingData = false;
     }
   };
+
+  //   the observer
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      // if the user has scrolled to the bottom and there are more items to fetch
+      if (hasMore && !loadingData) {
+        page++;
+        fetchData(page);
+      }
+    }
+  });
+  // observe the loading
+  observer.observe(loading);
+
+  // call the fetch
+  fetchData(page);
 });
